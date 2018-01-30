@@ -43,13 +43,27 @@ mnist = mnist_data.read_data_sets("data", one_hot=True, reshape=False, validatio
 X = tf.placeholder(tf.float32, [None, 28, 28, 1])
 # correct answers will go here
 Y_ = tf.placeholder(tf.float32, [None, 10])
-# weights W[784, 10]   784=28*28
-W1 = tf.Variable(tf.truncated_normal([28*28, 200], stddev=0.1))
-W2 = tf.Variable(tf.truncated_normal([200, 10], stddev=0.1))
 
-# biases b[10]
-B1 = tf.Variable(tf.zeros([200]))
-B2 = tf.Variable(tf.zeros([10]))
+# datapoints (neurons except for initial input) per layer
+
+layer0 = 28*28
+layer1 = 200
+layer2 = 120
+layer3 = 50
+layer4 = 10
+
+# weights
+W1 = tf.Variable(tf.truncated_normal([layer0, layer1], stddev=0.1))
+W2 = tf.Variable(tf.truncated_normal([layer1, layer2], stddev=0.1))
+W3 = tf.Variable(tf.truncated_normal([layer2, layer3], stddev=0.1))
+W4 = tf.Variable(tf.truncated_normal([layer3, layer4], stddev=0.1))
+
+# biases
+B1 = tf.Variable(tf.zeros([layer1]))
+B2 = tf.Variable(tf.zeros([layer2]))
+B3 = tf.Variable(tf.zeros([layer3]))
+B4 = tf.Variable(tf.zeros([layer4]))
+
 
 # flatten the images into a single line of pixels
 # -1 in the shape definition means "the only possible dimension that will preserve the number of elements"
@@ -57,7 +71,9 @@ XX = tf.reshape(X, [-1, 784])
 
 # The model
 Y1 = tf.nn.softmax(tf.matmul(XX, W1) + B1)
-Y = tf.nn.sigmoid(tf.matmul(Y1, W2) + B2)
+Y2 = tf.nn.softmax(tf.matmul(Y1, W2) + B2)
+Y3 = tf.nn.softmax(tf.matmul(Y2, W3) + B3)
+Y = tf.nn.sigmoid(tf.matmul(Y3, W4) + B4)
 
 # loss function: cross-entropy = - sum( Y_i * log(Yi) )
 #                           Y: the computed output vector
@@ -78,8 +94,8 @@ accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 train_step = tf.train.GradientDescentOptimizer(0.005).minimize(cross_entropy)
 
 # matplotlib visualisation
-allweights = tf.concat([tf.reshape(W1, [-1]), tf.reshape(W2, [-1])], 0)
-allbiases = tf.concat([tf.reshape(B1, [-1]), tf.reshape(B2, [-1])], 0)
+allweights = tf.concat([tf.reshape(W1, [-1]), tf.reshape(W2, [-1]), tf.reshape(W3, [-1]), tf.reshape(W4, [-1])], 0)
+allbiases = tf.concat([tf.reshape(B1, [-1]), tf.reshape(B2, [-1]), tf.reshape(B3, [-1]), tf.reshape(B4, [-1])], 0)
 I = tensorflowvisu.tf_format_mnist_images(X, Y, Y_)  # assembles 10x10 images by default
 It = tensorflowvisu.tf_format_mnist_images(X, Y, Y_, 1000, lines=25)  # 1000 images on 25 lines
 datavis = tensorflowvisu.MnistDataVis()
