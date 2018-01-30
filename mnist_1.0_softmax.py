@@ -56,7 +56,8 @@ B2 = tf.Variable(tf.zeros([10]))
 XX = tf.reshape(X, [-1, 784])
 
 # The model
-Y = tf.nn.softmax(tf.matmul(XX, W) + b)
+Y1 = tf.nn.softmax(tf.matmul(XX, W1) + B1)
+Y = tf.nn.sigmoid(tf.matmul(Y1, W2) + B2)
 
 # loss function: cross-entropy = - sum( Y_i * log(Yi) )
 #                           Y: the computed output vector
@@ -77,8 +78,8 @@ accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 train_step = tf.train.GradientDescentOptimizer(0.005).minimize(cross_entropy)
 
 # matplotlib visualisation
-allweights = tf.reshape(W, [-1])
-allbiases = tf.reshape(b, [-1])
+allweights = tf.concat([tf.reshape(W1, [-1]), tf.reshape(W2, [-1])], 0)
+allbiases = tf.concat([tf.reshape(B1, [-1]), tf.reshape(B2, [-1])], 0)
 I = tensorflowvisu.tf_format_mnist_images(X, Y, Y_)  # assembles 10x10 images by default
 It = tensorflowvisu.tf_format_mnist_images(X, Y, Y_, 1000, lines=25)  # 1000 images on 25 lines
 datavis = tensorflowvisu.MnistDataVis()
