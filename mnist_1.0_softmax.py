@@ -44,9 +44,12 @@ X = tf.placeholder(tf.float32, [None, 28, 28, 1])
 # correct answers will go here
 Y_ = tf.placeholder(tf.float32, [None, 10])
 # weights W[784, 10]   784=28*28
-W = tf.Variable(tf.zeros([784, 10]))
+W1 = tf.Variable(tf.truncated_normal([28*28, 200], stddev=0.1))
+W2 = tf.Variable(tf.truncated_normal([200, 10], stddev=0.1))
+
 # biases b[10]
-b = tf.Variable(tf.zeros([10]))
+B1 = tf.Variable(tf.zeros([200]))
+B2 = tf.Variable(tf.zeros([10]))
 
 # flatten the images into a single line of pixels
 # -1 in the shape definition means "the only possible dimension that will preserve the number of elements"
