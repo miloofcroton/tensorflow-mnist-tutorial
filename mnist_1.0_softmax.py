@@ -69,11 +69,14 @@ B4 = tf.Variable(tf.zeros([layer4]))
 # -1 in the shape definition means "the only possible dimension that will preserve the number of elements"
 XX = tf.reshape(X, [-1, 784])
 
-# The model
+# The first three layers
 Y1 = tf.nn.relu(tf.matmul(XX, W1) + B1)
 Y2 = tf.nn.relu(tf.matmul(Y1, W2) + B2)
 Y3 = tf.nn.relu(tf.matmul(Y2, W3) + B3)
-Y = tf.nn.softmax(tf.matmul(Y3, W4) + B4)
+
+# The final layer
+Ylogits = tf.matmul(Y3, W4) + B4
+Y = tf.nn.softmax(Ylogits)
 
 # loss function: cross-entropy = - sum( Y_i * log(Yi) )
 #                           Y: the computed output vector
